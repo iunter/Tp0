@@ -10,11 +10,11 @@ public class Sugerencia {
 	// ATRIBUTOS
 	private Torso torso = new Torso();
 	private Piernas piernas = new Piernas();
-	private List<Pies> pies = new ArrayList<Pies>();
-	private List<Opcional> opcional = new ArrayList<Opcional>();
+	private Pies pies = new Pies();
+	private Opcional opcional = new Opcional();
 	
 	// CONSTRUCTOR
-	public Sugerencia(Torso torso, Piernas piernas, List<Pies> pies, List<Opcional> opcional) {
+	public Sugerencia(Torso torso, Piernas piernas, Pies pies, Opcional opcional) {
 		super();
 		this.torso = torso;
 		this.piernas = piernas;
@@ -35,11 +35,11 @@ public class Sugerencia {
 		this.piernas = piernas;
 	}
 
-	private void setPies(List<Pies> pies) {
-		this.pies = pies;
+	private void setPies(Pies pies2) {
+		this.pies = pies2;
 	}
 
-	private void setOpcional(List<Opcional> opcional) {
+	private void setOpcional(Opcional opcional) {
 		this.opcional = opcional;
 	}
 	
@@ -51,37 +51,56 @@ public class Sugerencia {
 		return piernas;
 	}
 	
-	public List<Pies> getPies() {
+	public Pies getPies() {
 		return pies;
 	}
 	
-	public List<Opcional> getOpcional() {
+	public Opcional getOpcional() {
 		return opcional;
 	}
 	
 	public List<Sugerencia> generarSugerencias(List<Prenda> prendas) {
 		Pies pie = new Pies();
 		Opcional op = new Opcional();
-		List<Torso> pTorsos = (List<Torso>) listarPorPrenda(prendas, torso);
-		List<Piernas> pPiernas = (List<Piernas>) listarPorPrenda(prendas, piernas);
-		List<Pies> pPies = (List<Pies>) listarPorPrenda(prendas, pie);
-		List<Opcional> pOpcional = (List<Opcional>) listarPorPrenda(prendas, op);
+		List<Torso> pTorsos = new ArrayList<Torso>();
+		List<Piernas> pPiernas = new ArrayList<Piernas>();
+		List<Pies> pPies = new ArrayList<Pies>();
+		List<Opcional> pOpcional = new ArrayList<Opcional>();
+		
+		if((pTorsos = (List<Torso>) listarPorPrenda(prendas, torso)).isEmpty()) {
+			throw new SugerenciaException("Falta alguna prenda para el torso");
+		}
+		if((pPiernas = (List<Piernas>) listarPorPrenda(prendas, piernas)).isEmpty()) {
+			throw new SugerenciaException("Falta alguna prenda para las piernas");
+		}
+		if((pPies = (List<Pies>) listarPorPrenda(prendas, pie)).isEmpty()) {
+			throw new SugerenciaException("Falta alguna prenda para los pies");
+		}
+		pOpcional = (List<Opcional>) listarPorPrenda(prendas, op);
+		//no hace tirar una excepcion por que justamente son opcionales
+		
+		
 		
 		List<Sugerencia> sugerencias = new ArrayList<Sugerencia>();
 		Sugerencia unaSugerencia = new Sugerencia();
-		
-		for (int i = 0; i < pTorsos.size(); i++) {
-			unaSugerencia.setTorso(pTorsos.get(i));
-			for(int j = 0; j < pPiernas.size(); j++) {
-				unaSugerencia.setPiernas(pPiernas.get(j));
-				for (int k = 0; k < pPies.size(); k++) {
-					for (int l = 0; l < pOpcional.size(); l++) {
-						
-						sugerencias.add(unaSugerencia);
+			for (int i = 0; i < pTorsos.size(); i++) {
+					unaSugerencia.setTorso(pTorsos.get(i));
+				for(int j = 0; j < pPiernas.size(); j++) {
+					unaSugerencia.setPiernas(pPiernas.get(j));
+					for (int k = 0; k < pPies.size(); k++) {
+						unaSugerencia.setPies(pPies.get(k));
+						if(!pOpcional.isEmpty()) {
+							for (int l = 0; l < pOpcional.size(); l++) {
+								unaSugerencia.setOpcional(pOpcional.get(j));
+								sugerencias.add(unaSugerencia);
+							}
+						}else {
+							sugerencias.add(unaSugerencia);
+						}
 					}
 				}
 			}
-		}
+			
 		
 		return sugerencias;
 	}
