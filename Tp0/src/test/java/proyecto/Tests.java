@@ -25,8 +25,7 @@ public class Tests {
 		Opcional op3 = new Opcional("op3");
 		
 		prendas.addAll(Arrays.asList(t1,t2,p,p2,pies,op,op2,op3));
-		
-		
+		//me deberia devolver solo las prendas de torso (para saber si filtra bien).
 		assertTrue(sugerencia.listarPorPrenda(prendas, t1).size() == 2);
 	}
 	
@@ -45,7 +44,7 @@ public class Tests {
 		
 		prendas.addAll(Arrays.asList(t1,t2,p,p2,pies,op,op2,op3));
 		
-		// 2*2*1*3 = 12, tengo 12 sugerencias
+		// 2*2*1*3 = 12, tengo 12 sugerencias.
 		assertTrue(sugerencia.generarSugerencias(prendas).size() == 12);
 		
 	}
@@ -62,6 +61,7 @@ public class Tests {
 		Opcional op3 = new Opcional("op3");
 		prendas.addAll(Arrays.asList(p,p2,pies,op,op2,op3));
 		sugerencia.generarSugerencias(prendas);
+		//Esto se deberia romper por que debe haber por lo menos una prenda del tipo torso.
 	}
 	@Test
 	public void testSinOpcional() {
@@ -73,7 +73,9 @@ public class Tests {
 		Piernas p2 = new Piernas("P2");
 		Pies pies = new Pies("Zapatilla");
 		prendas.addAll(Arrays.asList(t1,t2,p,p2,pies));
-		//no deberia haber problema, el opcional no hace falta
+		/*no deberia haber problema, el opcional no hace falta
+		 * 2*2*1 = 4, tengo 4 sugerencias.
+		 */
 		assertTrue(sugerencia.generarSugerencias(prendas).size() == 4);
 		
 	}

@@ -1,9 +1,14 @@
 package proyecto;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Sets;
 
 public class Sugerencia {
 	
@@ -59,29 +64,36 @@ public class Sugerencia {
 		return opcional;
 	}
 	
-	public List<Sugerencia> generarSugerencias(List<Prenda> prendas) {
+	public Set<List<Prenda>> generarSugerencias(List<Prenda> prendas) {
 		Pies pie = new Pies();
 		Opcional op = new Opcional();
-		List<Torso> pTorsos = new ArrayList<Torso>();
-		List<Piernas> pPiernas = new ArrayList<Piernas>();
-		List<Pies> pPies = new ArrayList<Pies>();
-		List<Opcional> pOpcional = new ArrayList<Opcional>();
+		Set<Torso> pTorsos = new HashSet<Torso>();
+		Set<Piernas> pPiernas = new HashSet<Piernas>();
+		Set<Pies> pPies = new HashSet<Pies>();
+		Set<Opcional> pOpcional = new HashSet<Opcional>();
 		
-		if((pTorsos = (List<Torso>) listarPorPrenda(prendas, torso)).isEmpty()) {
+		if((pTorsos = (Set<Torso>) listarPorPrenda(prendas, torso)).isEmpty()) {
 			throw new SugerenciaException("Falta alguna prenda para el torso");
 		}
-		if((pPiernas = (List<Piernas>) listarPorPrenda(prendas, piernas)).isEmpty()) {
+		if((pPiernas = (Set<Piernas>) listarPorPrenda(prendas, piernas)).isEmpty()) {
 			throw new SugerenciaException("Falta alguna prenda para las piernas");
 		}
-		if((pPies = (List<Pies>) listarPorPrenda(prendas, pie)).isEmpty()) {
+		if((pPies = (Set<Pies>) listarPorPrenda(prendas, pie)).isEmpty()) {
 			throw new SugerenciaException("Falta alguna prenda para los pies");
 		}
-		pOpcional = (List<Opcional>) listarPorPrenda(prendas, op);
-		//no hace tirar una excepcion por que justamente son opcionales
+		if((pOpcional = (Set<Opcional>) listarPorPrenda(prendas, op)).isEmpty()) {
+			return Sets.cartesianProduct(pTorsos,pPiernas,pPies);
+			/*no hace tirar una excepcion por que justamente son opcionales, pero al metodo
+			 *cartesianProduct no le puedo pasar un set vacio.
+			 */
+		}else {
+			return Sets.cartesianProduct(pTorsos,pPiernas,pPies,pOpcional);
+		}
 		
 		
 		
-		List<Sugerencia> sugerencias = new ArrayList<Sugerencia>();
+		
+		/*List<Sugerencia> sugerencias = new ArrayList<Sugerencia>();
 		Sugerencia unaSugerencia = new Sugerencia();
 			for (int i = 0; i < pTorsos.size(); i++) {
 					unaSugerencia.setTorso(pTorsos.get(i));
@@ -102,16 +114,17 @@ public class Sugerencia {
 			}
 			
 		
-		return sugerencias;
+		return sugerencias;*/
 	}
 	
 	// PARA LISTAR SEGUN QUE CLASE
-	public List<? extends Prenda> listarPorPrenda(List<? extends Prenda> prendas, Prenda prenda){
+	public Set<? extends Prenda> listarPorPrenda(List<? extends Prenda> prendas, Prenda prenda){
 		List<? extends Prenda> prendaFiltrada = prendas.stream()
 				.filter(prenda.getClass()::isInstance)
 				.map(prenda.getClass()::cast)
 				.collect(Collectors.toList());
-		return prendaFiltrada;
+		Set devolverSet = new HashSet(prendaFiltrada);
+		return devolverSet;
 	}
 	
 }
